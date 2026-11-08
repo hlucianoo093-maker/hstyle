@@ -1255,8 +1255,54 @@ app.get('/employee', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'employee.html'));
 });
 
-app.get('/booking', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'booking.html'));
+app.get('/booking', async (req, res) => {
+  try {
+    const [services, bundles, settings, bookingPage] = await Promise.all([
+      all(
+        `SELECT * FROM services
+         WHERE active = 1
+         AND id NOT IN (SELECT booking_service_id FROM bundles WHERE active = 1)
+         ORDER BY price`
+      ),
+      getBundles(),
+      readBusinessSettings(),
+      fs.promises.readFile(path.join(__dirname, 'public', 'booking.html'), 'utf8'),
+    ]);
+    const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+    })[character]);
+    const currency = settings.currency || 'MKD';
+    const locale = settings.language === 'sq' ? 'sq-XK' : 'mk-MK';
+    const formatPrice = (amount) => {
+      const value = Number(amount) || 0;
+      if (currency === 'MKD') {
+        return `${new Intl.NumberFormat(locale, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(value)} MKD`;
+      }
+      return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(value);
+    };
+    const options = [
+      ...services.map((service) => `<option value="${service.id}">${escapeHtml(service.name)} — ${escapeHtml(formatPrice(service.price))}</option>`),
+      ...bundles.map((bundle) => `<option value="${bundle.booking_service_id}">${escapeHtml(bundle.name)} — ${escapeHtml(formatPrice(bundle.price))}</option>`),
+    ];
+    const selectMarkup = `<select id="serviceSelect" name="serviceId" required>${options.join('') || '<option value="" disabled selected>No services are currently available.</option>'}</select>`;
+    const emptySelect = '<select id="serviceSelect" name="serviceId" required></select>';
+    if (!bookingPage.includes(emptySelect)) {
+      throw new Error('Booking service selector was not found in the page template.');
+    }
+
+    res.set('Cache-Control', 'no-store');
+    res.type('html').send(bookingPage.replace(emptySelect, selectMarkup));
+  } catch (error) {
+    console.error('Failed to render booking page', error);
+    res.status(500).send('Unable to load booking services. Please refresh and try again.');
+  }
 });
 
 app.get('/', async (req, res) => {
