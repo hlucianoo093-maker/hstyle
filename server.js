@@ -1255,6 +1255,10 @@ app.get('/employee', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'employee.html'));
 });
 
+app.get('/booking', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'booking.html'));
+});
+
 app.get('/', async (req, res) => {
   try {
     const settings = await readBusinessSettings();

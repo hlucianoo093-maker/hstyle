@@ -43,6 +43,7 @@ Never commit `.env` or share the Neon connection string. Keep the Vercel and Neo
    npm start
 3. Open the site:
    http://localhost:3000/
+   Direct booking page: http://localhost:3000/booking
    Barber landing page: http://localhost:3000/barber
    Salon landing page: http://localhost:3000/salon
    Employee portal: http://localhost:3000/employee

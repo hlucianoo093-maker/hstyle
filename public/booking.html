@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="sq">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Rezervo online terminin tënd në hSTYLE. Zgjidh shërbimin, specialistin dhe orarin që të përshtatet." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Rezervo termin | hSTYLE" />
+    <meta property="og:description" content="Rezervo online termin tënd në hSTYLE, shpejt dhe lehtë." />
+    <meta property="og:url" content="https://hstyle-three.vercel.app/booking" />
+    <link rel="canonical" href="https://hstyle-three.vercel.app/booking" />
+    <title>Rezervo termin | hSTYLE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="booking.css" />
+  </head>
+  <body data-business-type="salon" data-landing-type="salon" data-booking-only>
+    <header class="topbar booking-page-header">
+      <div class="container nav">
+        <a class="brand" href="/salon" aria-label="hSTYLE - faqja kryesore">
+          <img id="siteLogo" class="site-logo hidden" alt="" />
+          <span id="siteBusinessName">hSTYLE</span>
+        </a>
+        <a class="button button-small" href="#booking">Rezervo termin</a>
+      </div>
+    </header>
+
+    <main>
+      <section id="booking" class="section booking-section salon-booking-section">
+        <div class="container booking-wrap">
+          <div class="booking-copy">
+            <p class="eyebrow">Rezervim i lehtë</p>
+            <h1>Rezervo terminin tënd</h1>
+            <p>Zgjidh shërbimin, specialistin, datën dhe orarin që të përshtatet. Konfirmimi bëhet menjëherë.</p>
+          </div>
+          <div class="booking-card">
+            <div class="progress" aria-label="Hapat e rezervimit"><span class="step active">1</span><span class="step">2</span><span class="step">3</span><span class="step">4</span></div>
+            <form id="booking-form">
+              <div class="form-step active" data-step="1">
+                <label for="serviceSelect">Zgjidhni shërbimin</label><select id="serviceSelect" name="serviceId" required></select>
+                <div class="step-actions"><button type="button" class="button next-step">Vazhdo</button></div>
+              </div>
+              <div class="form-step" data-step="2">
+                <label for="barberSelect" id="barberSelectLabel">Zgjidhni specialistin</label><select id="barberSelect" name="barberId" required></select>
+                <div class="step-actions two-buttons"><button type="button" class="button button-ghost prev-step">Mbrapa</button><button type="button" class="button next-step">Vazhdo</button></div>
+              </div>
+              <div class="form-step" data-step="3">
+                <label for="bookingDate">Zgjidhni datën</label><input id="bookingDate" type="date" name="date" required />
+                <label class="slots-label" for="timeSlots">Orari i lirë</label><div id="timeSlots" class="time-slots" aria-live="polite"></div>
+                <div class="step-actions two-buttons"><button type="button" class="button button-ghost prev-step">Mbrapa</button><button type="button" class="button next-step">Vazhdo</button></div>
+              </div>
+              <div class="form-step" data-step="4">
+                <div class="field-row">
+                  <div><label for="customerName">Emri dhe mbiemri</label><input id="customerName" name="customerName" type="text" placeholder="Emri juaj" autocomplete="name" required /></div>
+                  <div><label for="phone">Numri i telefonit</label><input id="phone" name="phone" type="tel" placeholder="Numri juaj i telefonit" autocomplete="tel" required /></div>
+                </div>
+                <label for="email">Email (opsional)</label><input id="email" name="email" type="email" placeholder="ju@example.com" autocomplete="email" />
+                <div class="step-actions two-buttons"><button type="button" class="button button-ghost prev-step">Mbrapa</button><button type="submit" class="button">Konfirmo rezervimin</button></div>
+              </div>
+            </form>
+            <div id="bookingSuccess" class="success hidden" role="status" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="booking-page-footer">
+      <a class="brand" href="/salon" id="footerBusinessName">hSTYLE</a>
+      <label class="language-switcher"><span>Gjuha</span><select id="languageSwitcher" aria-label="Zgjidhni gjuhën"></select></label>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -37,6 +37,11 @@ function escapeHtml(value) {
   })[character]);
 }
 
+function setTextIfPresent(selector, value) {
+  const element = document.querySelector(selector);
+  if (element) element.textContent = value;
+}
+
 function formatCurrency(amount) {
   const locale = state.settings.language === 'sq' ? 'sq-XK' : 'mk-MK';
   const value = Number(amount) || 0;
@@ -54,6 +59,7 @@ function formatCurrency(amount) {
 }
 
 function setLogo(image, name, url) {
+  if (!image) return;
   image.onerror = () => image.classList.add('hidden');
   if (!url) {
     image.removeAttribute('src');
@@ -78,35 +84,35 @@ function applyBusinessSettings(settings) {
   document.documentElement.lang = state.settings.language;
   document.body.dataset.businessType = pageType;
   document.title = `${state.settings.business_name} | ${isSalon ? 'Beauty Studio' : 'Barber Studio'}`;
-  document.getElementById('siteBusinessName').textContent = state.settings.business_name;
-  document.getElementById('footerBusinessName').textContent = state.settings.business_name;
-  document.getElementById('footerBusinessNameCopy').textContent = state.settings.business_name;
+  setTextIfPresent('#siteBusinessName', state.settings.business_name);
+  setTextIfPresent('#footerBusinessName', state.settings.business_name);
+  setTextIfPresent('#footerBusinessNameCopy', state.settings.business_name);
   setLogo(document.getElementById('siteLogo'), state.settings.business_name, state.settings.logo_url);
   setFooterLink('googleReviewLink', state.settings.google_review_url);
   setFooterLink('facebookLink', state.settings.facebook_url);
   setFooterLink('instagramLink', state.settings.instagram_url);
 
-  document.getElementById('heroEyebrow').textContent = isSalon ? 'Your beauty studio' : 'Tailored grooming';
-  document.getElementById('heroHeadline').textContent = isSalon ? 'Feel Beautiful. Be Yourself.' : 'Look Sharp. Feel Confident.';
-  document.getElementById('heroIntro').textContent = isSalon
+  setTextIfPresent('#heroEyebrow', isSalon ? 'Your beauty studio' : 'Tailored grooming');
+  setTextIfPresent('#heroHeadline', isSalon ? 'Feel Beautiful. Be Yourself.' : 'Look Sharp. Feel Confident.');
+  setTextIfPresent('#heroIntro', isSalon
     ? 'Thoughtful beauty services, refined details, and a welcoming studio experience made around you.'
-    : 'Precision cuts, refined details, and a modern barber experience built for the way you live.';
-  document.getElementById('teamEyebrow').textContent = isSalon ? 'Meet our specialists' : 'Meet our barbers';
-  document.getElementById('teamHeadline').textContent = isSalon ? 'A little time, just for you.' : 'Crafted by professionals.';
-  document.getElementById('barberSelectLabel').textContent = isSalon ? 'Choose Specialist' : 'Choose Barber';
-  document.querySelector('nav a[href="#barbers"]').textContent = isSalon ? 'Our Team' : 'Barbers';
-  document.querySelector('.highlights li:nth-child(1)').textContent = isSalon ? 'Thoughtful beauty' : 'Premium grooming';
-  document.querySelector('.highlights li:nth-child(2)').textContent = isSalon ? 'Easy online booking' : 'Fast, easy booking';
-  document.querySelector('.highlights li:nth-child(3)').textContent = isSalon ? 'Care by trusted specialists' : 'Trusted by local clients';
+    : 'Precision cuts, refined details, and a modern barber experience built for the way you live.');
+  setTextIfPresent('#teamEyebrow', isSalon ? 'Meet our specialists' : 'Meet our barbers');
+  setTextIfPresent('#teamHeadline', isSalon ? 'A little time, just for you.' : 'Crafted by professionals.');
+  setTextIfPresent('#barberSelectLabel', isSalon ? 'Choose Specialist' : 'Choose Barber');
+  setTextIfPresent('nav a[href="#barbers"]', isSalon ? 'Our Team' : 'Barbers');
+  setTextIfPresent('.highlights li:nth-child(1)', isSalon ? 'Thoughtful beauty' : 'Premium grooming');
+  setTextIfPresent('.highlights li:nth-child(2)', isSalon ? 'Easy online booking' : 'Fast, easy booking');
+  setTextIfPresent('.highlights li:nth-child(3)', isSalon ? 'Care by trusted specialists' : 'Trusted by local clients');
   const reviews = document.querySelectorAll('.review-card > p');
   if (isSalon) {
-    reviews[0].textContent = '“A beautiful experience from start to finish. The care and attention to detail were exceptional.”';
-    reviews[1].textContent = '“Booking was effortless and I left feeling refreshed. Such a lovely, professional studio.”';
-    reviews[2].textContent = '“Thoughtful service in a welcoming space. I have already booked my next visit.”';
+    if (reviews[0]) reviews[0].textContent = '“A beautiful experience from start to finish. The care and attention to detail were exceptional.”';
+    if (reviews[1]) reviews[1].textContent = '“Booking was effortless and I left feeling refreshed. Such a lovely, professional studio.”';
+    if (reviews[2]) reviews[2].textContent = '“Thoughtful service in a welcoming space. I have already booked my next visit.”';
   } else {
-    reviews[0].textContent = '“The fade was flawless and the attention to detail was unreal. Fast, clean, and professional.”';
-    reviews[1].textContent = '“I booked my haircut in seconds and loved the experience from start to finish. Very polished.”';
-    reviews[2].textContent = '“The beard trim and hot towel service is a game-changer. This place is worth every minute.”';
+    if (reviews[0]) reviews[0].textContent = '“The fade was flawless and the attention to detail was unreal. Fast, clean, and professional.”';
+    if (reviews[1]) reviews[1].textContent = '“I booked my haircut in seconds and loved the experience from start to finish. Very polished.”';
+    if (reviews[2]) reviews[2].textContent = '“The beard trim and hot towel service is a game-changer. This place is worth every minute.”';
   }
 
   renderLanguageSwitcher();
@@ -266,6 +272,7 @@ const siteTranslations = {
 
 function setFooterLink(id, url) {
   const link = document.getElementById(id);
+  if (!link) return;
   if (!url) {
     link.removeAttribute('href');
     link.classList.add('hidden');
@@ -277,6 +284,7 @@ function setFooterLink(id, url) {
 
 function renderLanguageSwitcher() {
   const switcher = document.getElementById('languageSwitcher');
+  if (!switcher) return;
   const names = { mk: 'Македонски', sq: 'Shqip' };
   switcher.innerHTML = state.settings.supported_languages
     .map((language) => `<option value="${language}">${names[language]}</option>`).join('');
@@ -337,24 +345,29 @@ function applyLanguage(language) {
     ['label[for="email"]', text.emailLabel],
   ];
   labels.forEach(([selector, value]) => setText(selector, value));
-  document.getElementById('customerName').placeholder = text.fullNamePlaceholder;
-  document.getElementById('phone').placeholder = text.phonePlaceholder;
-  document.getElementById('email').placeholder = text.emailPlaceholder;
-  document.querySelector('.progress').setAttribute('aria-label', text.bookingEyebrow);
+  const customerName = document.getElementById('customerName');
+  const phone = document.getElementById('phone');
+  const email = document.getElementById('email');
+  if (customerName) customerName.placeholder = text.fullNamePlaceholder;
+  if (phone) phone.placeholder = text.phonePlaceholder;
+  if (email) email.placeholder = text.emailPlaceholder;
+  const progress = document.querySelector('.progress');
+  if (progress) progress.setAttribute('aria-label', text.bookingEyebrow);
   document.querySelectorAll('.bundle-card .eyebrow').forEach((eyebrow) => { eyebrow.textContent = text.included; });
   document.querySelectorAll('.next-step').forEach((button) => { button.textContent = text.next; });
   document.querySelectorAll('.prev-step').forEach((button) => { button.textContent = text.back; });
   setText('#booking-form button[type="submit"]', text.confirm);
   const languageLabel = document.querySelector('.language-switcher > span');
   if (languageLabel) languageLabel.textContent = text.language;
-  document.getElementById('languageSwitcher').setAttribute('aria-label', text.language);
+  const languageSwitcher = document.getElementById('languageSwitcher');
+  if (languageSwitcher) languageSwitcher.setAttribute('aria-label', text.language);
   setText('#footerTagline', text.footerTagline);
   setText('#footerCopyrightSuffix', text.copyright);
   const footerLinks = document.querySelectorAll('.footer-links');
   if (footerLinks[0]) {
-    footerLinks[0].children[0].textContent = text.createBooking;
-    footerLinks[0].children[1].textContent = text.employeeLogin;
-    footerLinks[0].children[2].textContent = text.ownerPortal;
+    if (footerLinks[0].children[0]) footerLinks[0].children[0].textContent = text.createBooking;
+    if (footerLinks[0].children[1]) footerLinks[0].children[1].textContent = text.employeeLogin;
+    if (footerLinks[0].children[2]) footerLinks[0].children[2].textContent = text.ownerPortal;
   }
   renderServices();
   renderBundles();
@@ -362,9 +375,10 @@ function applyLanguage(language) {
 
 function renderServices() {
   const previousService = serviceSelect.value || state.selectedService;
-  serviceList.innerHTML = state.services
-    .map(
-      (service) => `
+  if (serviceList) {
+    serviceList.innerHTML = state.services
+      .map(
+        (service) => `
         <article class="service-card">
           <p class="eyebrow">${state.settings.language === 'mk' ? 'Услуга' : 'Shërbim'}</p>
           <h3>${escapeHtml(service.name)}</h3>
@@ -375,8 +389,9 @@ function renderServices() {
           </div>
         </article>
       `
-    )
-    .join('');
+      )
+      .join('');
+  }
 
   serviceSelect.innerHTML = state.services
     .map((service) => `<option value="${service.id}">${escapeHtml(service.name)} — ${escapeHtml(formatCurrency(service.price))}</option>`)
@@ -419,9 +434,10 @@ function renderBundles() {
 }
 
 function renderBarbers() {
-  barberList.innerHTML = state.barbers
-    .map(
-      (barber) => `
+  if (barberList) {
+    barberList.innerHTML = state.barbers
+      .map(
+        (barber) => `
         <article class="barber-card">
           <div class="barber-image" style="background-image: url('${escapeHtml(barber.image || 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80')}');"></div>
           <div class="barber-info">
@@ -430,8 +446,9 @@ function renderBarbers() {
           </div>
         </article>
       `
-    )
-    .join('');
+      )
+      .join('');
+  }
 
   barberSelect.innerHTML = state.barbers
     .map((barber) => `<option value="${barber.id}">${escapeHtml(barber.name)}</option>`)
@@ -622,13 +639,16 @@ bookingForm.addEventListener('submit', async (event) => {
   }
 });
 
-document.getElementById('languageSwitcher').addEventListener('change', (event) => {
-  const language = event.target.value;
-  if (!state.settings.supported_languages.includes(language)) return;
-  state.settings.language = language;
-  localStorage.setItem('site-language', language);
-  applyLanguage(language);
-});
+const languageSwitcher = document.getElementById('languageSwitcher');
+if (languageSwitcher) {
+  languageSwitcher.addEventListener('change', (event) => {
+    const language = event.target.value;
+    if (!state.settings.supported_languages.includes(language)) return;
+    state.settings.language = language;
+    localStorage.setItem('site-language', language);
+    applyLanguage(language);
+  });
+}
 
 showCurrentStep(1);
 loadData();
