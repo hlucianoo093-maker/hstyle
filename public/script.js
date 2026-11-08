@@ -27,6 +27,7 @@ const timeSlots = document.getElementById('timeSlots');
 const bookingForm = document.getElementById('booking-form');
 const bookingSuccess = document.getElementById('bookingSuccess');
 const bookingDataStatus = document.getElementById('bookingDataStatus');
+const isBookingOnlyPage = document.body.hasAttribute('data-booking-only');
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, (character) => ({
@@ -94,7 +95,7 @@ function applyBusinessSettings(settings) {
   if (!Array.isArray(state.settings.supported_languages)) {
     state.settings.supported_languages = String(state.settings.supported_languages || 'mk,sq').split(',');
   }
-  const savedLanguage = getSavedLanguage();
+  const savedLanguage = isBookingOnlyPage ? null : getSavedLanguage();
   if (state.settings.supported_languages.includes(savedLanguage)) state.settings.language = savedLanguage;
   const pageType = document.body.dataset.landingType || state.settings.business_type;
   const isSalon = pageType === 'salon';
@@ -703,7 +704,7 @@ if (languageSwitcher) {
     const language = event.target.value;
     if (!state.settings.supported_languages.includes(language)) return;
     state.settings.language = language;
-    saveLanguage(language);
+    if (!isBookingOnlyPage) saveLanguage(language);
     applyLanguage(language);
   });
 }
