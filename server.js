@@ -1244,8 +1244,7 @@ app.get('/employee', (req, res) => {
 app.get('/', async (req, res) => {
   try {
     const settings = await readBusinessSettings();
-    const page = settings.business_type === 'salon' ? 'salon.html' : 'barber.html';
-    res.sendFile(path.join(__dirname, 'public', page));
+    res.redirect(settings.business_type === 'salon' ? '/salon' : '/barber');
   } catch (error) {
     res.status(500).send('Unable to load the business website.');
   }
