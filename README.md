@@ -28,6 +28,14 @@ A responsive barber salon website with a simple 4-step appointment booking flow 
 
 The app uses local SQLite for development when `DATABASE_URL` is absent, and Neon PostgreSQL when it is present. Never commit `.env` or share the Neon connection string. Keep the Render and Neon regions close to reduce latency.
 
+## Deploying to Vercel
+1. Create a Neon project and copy its pooled PostgreSQL connection string. Vercel's filesystem is ephemeral, so production must use PostgreSQL rather than the local SQLite database.
+2. Import this repository into Vercel, or deploy it with the Vercel CLI. The included `vercel.json` routes requests through the Express serverless function.
+3. Add `DATABASE_URL` and a long, unique `ADMIN_PASSWORD` as Vercel environment variables for Production. Set `NODE_ENV` to `production`, then deploy.
+4. To carry over local SQLite data, configure `DATABASE_URL` in a local `.env` file and run `npm run db:migrate-sqlite` before accepting live bookings. The importer refuses to run if Neon already has appointments. Employee sessions are intentionally not migrated, so employees sign in again.
+
+Never commit `.env` or share the Neon connection string. Keep the Vercel and Neon regions close to reduce latency.
+
 ## Run locally
 1. Install dependencies:
    npm install

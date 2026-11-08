@@ -1269,8 +1269,15 @@ async function startServer() {
   });
 }
 
-startServer();
+module.exports = { app, initDatabase };
 
-process.on('SIGINT', () => {
-  Promise.resolve(pool ? pool.end() : db?.close()).finally(() => process.exit(0));
-});
+if (require.main === module) {
+  startServer().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+
+  process.on('SIGINT', () => {
+    Promise.resolve(pool ? pool.end() : db?.close()).finally(() => process.exit(0));
+  });
+}
