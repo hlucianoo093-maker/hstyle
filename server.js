@@ -20,6 +20,7 @@ if (process.env.NODE_ENV !== 'production' && !process.env.DATABASE_URL) {
 
 let db;
 let pool;
+let databaseInitialization;
 
 async function initializeDatabase() {
   if (process.env.DATABASE_URL) {
@@ -53,6 +54,9 @@ function persistDatabase() {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use((req, res, next) => {
+  ensureDatabaseInitialized().then(() => next(), next);
+});
 app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
 function postgresSql(sql) {
@@ -335,6 +339,16 @@ async function initDatabase() {
       await run(`INSERT INTO working_hours (barber_id, day_of_week, start_time, end_time) VALUES ${placeholders}`, flattened);
     }
   }
+}
+
+function ensureDatabaseInitialized() {
+  if (!databaseInitialization) {
+    databaseInitialization = initDatabase().catch((error) => {
+      databaseInitialization = undefined;
+      throw error;
+    });
+  }
+  return databaseInitialization;
 }
 
 function overlapExists(existingStart, existingEnd, bookingStart, bookingEnd) {
@@ -1259,7 +1273,7 @@ app.get('*', (req, res) => {
 });
 
 async function startServer() {
-  await initDatabase();
+  await ensureDatabaseInitialized();
   if (process.argv.includes('--init-db')) {
     if (pool) await pool.end();
     if (db) db.close();
@@ -1270,7 +1284,7 @@ async function startServer() {
   });
 }
 
-module.exports = { app, initDatabase };
+module.exports = app;
 
 if (require.main === module) {
   startServer().catch((error) => {

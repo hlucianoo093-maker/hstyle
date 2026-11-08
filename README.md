@@ -30,7 +30,7 @@ The app uses local SQLite for development when `DATABASE_URL` is absent, and Neo
 
 ## Deploying to Vercel
 1. Create a Neon project and copy its pooled PostgreSQL connection string. Vercel's filesystem is ephemeral, so production must use PostgreSQL rather than the local SQLite database.
-2. Import this repository into Vercel, or deploy it with the Vercel CLI. The included `vercel.json` routes requests through the Express serverless function.
+2. Import this repository into Vercel, or deploy it with the Vercel CLI. Vercel detects the exported Express app in `server.js` and runs it as a serverless function.
 3. Add `DATABASE_URL` and a long, unique `ADMIN_PASSWORD` as Vercel environment variables for Production. Set `NODE_ENV` to `production`, then deploy.
 4. To carry over local SQLite data, configure `DATABASE_URL` in a local `.env` file and run `npm run db:migrate-sqlite` before accepting live bookings. The importer refuses to run if Neon already has appointments. Employee sessions are intentionally not migrated, so employees sign in again.
 
