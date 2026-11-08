@@ -43,6 +43,23 @@ function setTextIfPresent(selector, value) {
   if (element) element.textContent = value;
 }
 
+function getSavedLanguage() {
+  try {
+    return localStorage.getItem('site-language');
+  } catch (error) {
+    console.warn('Unable to read the saved language preference', error);
+    return null;
+  }
+}
+
+function saveLanguage(language) {
+  try {
+    localStorage.setItem('site-language', language);
+  } catch (error) {
+    console.warn('Unable to save the language preference', error);
+  }
+}
+
 function formatCurrency(amount) {
   const locale = state.settings.language === 'sq' ? 'sq-XK' : 'mk-MK';
   const value = Number(amount) || 0;
@@ -77,7 +94,7 @@ function applyBusinessSettings(settings) {
   if (!Array.isArray(state.settings.supported_languages)) {
     state.settings.supported_languages = String(state.settings.supported_languages || 'mk,sq').split(',');
   }
-  const savedLanguage = localStorage.getItem('site-language');
+  const savedLanguage = getSavedLanguage();
   if (state.settings.supported_languages.includes(savedLanguage)) state.settings.language = savedLanguage;
   const pageType = document.body.dataset.landingType || state.settings.business_type;
   const isSalon = pageType === 'salon';
@@ -686,7 +703,7 @@ if (languageSwitcher) {
     const language = event.target.value;
     if (!state.settings.supported_languages.includes(language)) return;
     state.settings.language = language;
-    localStorage.setItem('site-language', language);
+    saveLanguage(language);
     applyLanguage(language);
   });
 }
