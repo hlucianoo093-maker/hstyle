@@ -14,7 +14,9 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || (process.env.NODE_ENV === '
 const dataDir = path.join(__dirname, 'data');
 const dbPath = path.join(dataDir, 'salon.db');
 
-fs.mkdirSync(dataDir, { recursive: true });
+if (process.env.NODE_ENV !== 'production' && !process.env.DATABASE_URL) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
 
 let db;
 let pool;
