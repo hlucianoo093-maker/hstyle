@@ -1,21 +1,37 @@
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const cookieParser = require('cookie-parser');
 const initSqlJs = require('sql.js');
+const { Pool } = require('pg');
 const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || (process.env.NODE_ENV === 'production' ? '' : 'admin123');
 const dataDir = path.join(__dirname, 'data');
 const dbPath = path.join(dataDir, 'salon.db');
 
 fs.mkdirSync(dataDir, { recursive: true });
 
 let db;
+let pool;
 
 async function initializeDatabase() {
+  if (process.env.DATABASE_URL) {
+    pool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      max: 5,
+      connectionTimeoutMillis: 10000,
+      idleTimeoutMillis: 10000,
+    });
+    await pool.query('SELECT 1');
+    console.log('Connected to Neon PostgreSQL database.');
+    return;
+  }
+
   const SQL = await initSqlJs();
   if (fs.existsSync(dbPath)) {
     const fileBuffer = fs.readFileSync(dbPath);
@@ -27,7 +43,7 @@ async function initializeDatabase() {
 }
 
 function persistDatabase() {
-  if (!db) return;
+  if (!db || pool) return;
   const binary = Buffer.from(db.export());
   fs.writeFileSync(dbPath, binary);
 }
@@ -37,10 +53,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
-function run(sql, params = []) {
+function postgresSql(sql) {
+  let parameterIndex = 0;
+  return sql.replace(/\?/g, () => `$${++parameterIndex}`);
+}
+
+async function run(sql, params = []) {
+  if (pool) {
+    const result = await pool.query(postgresSql(sql), params);
+    return { id: Number(result.rows[0]?.id) || 0, changes: result.rowCount || 0 };
+  }
+
   return new Promise((resolve, reject) => {
     try {
-      const stmt = db.prepare(sql);
+      const stmt = db.prepare(sql.replace(/\s+RETURNING\s+id\s*$/i, ''));
       if (params.length) {
         stmt.bind(params);
       }
@@ -60,7 +86,12 @@ function run(sql, params = []) {
   });
 }
 
-function get(sql, params = []) {
+async function get(sql, params = []) {
+  if (pool) {
+    const result = await pool.query(postgresSql(sql), params);
+    return result.rows[0] || null;
+  }
+
   return new Promise((resolve, reject) => {
     try {
       const stmt = db.prepare(sql);
@@ -76,7 +107,12 @@ function get(sql, params = []) {
   });
 }
 
-function all(sql, params = []) {
+async function all(sql, params = []) {
+  if (pool) {
+    const result = await pool.query(postgresSql(sql), params);
+    return result.rows;
+  }
+
   return new Promise((resolve, reject) => {
     try {
       const stmt = db.prepare(sql);
@@ -114,13 +150,21 @@ function dayName(dateString) {
 }
 
 async function initDatabase() {
+  if (process.env.NODE_ENV === 'production' && (!process.env.DATABASE_URL || !ADMIN_PASSWORD)) {
+    throw new Error('DATABASE_URL and ADMIN_PASSWORD must be set in production.');
+  }
   await initializeDatabase();
+
+  const idPrimaryKey = pool ? 'SERIAL PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT';
+  const priceType = pool ? 'DOUBLE PRECISION' : 'REAL';
+  const timestampType = pool ? 'TIMESTAMP' : 'TEXT';
+  const expiryType = pool ? 'BIGINT' : 'INTEGER';
 
   await run(`
     CREATE TABLE IF NOT EXISTS services (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id ${idPrimaryKey},
       name TEXT NOT NULL,
-      price REAL NOT NULL,
+      price ${priceType} NOT NULL,
       duration INTEGER NOT NULL,
       active INTEGER DEFAULT 1
     );
@@ -128,7 +172,7 @@ async function initDatabase() {
 
   await run(`
     CREATE TABLE IF NOT EXISTS barbers (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id ${idPrimaryKey},
       name TEXT NOT NULL,
       title TEXT,
       image TEXT,
@@ -138,7 +182,7 @@ async function initDatabase() {
 
   await run(`
     CREATE TABLE IF NOT EXISTS appointments (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id ${idPrimaryKey},
       service_id INTEGER NOT NULL,
       barber_id INTEGER NOT NULL,
       appointment_date TEXT NOT NULL,
@@ -148,13 +192,13 @@ async function initDatabase() {
       email TEXT,
       status TEXT DEFAULT 'pending',
       reference TEXT UNIQUE NOT NULL,
-      created_at TEXT DEFAULT CURRENT_TIMESTAMP
+      created_at ${timestampType} DEFAULT CURRENT_TIMESTAMP
     );
   `);
 
   await run(`
     CREATE TABLE IF NOT EXISTS working_hours (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id ${idPrimaryKey},
       barber_id INTEGER NOT NULL,
       day_of_week INTEGER NOT NULL,
       start_time TEXT NOT NULL,
@@ -164,7 +208,7 @@ async function initDatabase() {
 
   await run(`
     CREATE TABLE IF NOT EXISTS unavailable_dates (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id ${idPrimaryKey},
       barber_id INTEGER NOT NULL,
       date TEXT NOT NULL,
       reason TEXT
@@ -195,7 +239,7 @@ async function initDatabase() {
   };
   for (const [key, value] of Object.entries(defaultSettings)) {
     await run(
-      'INSERT OR IGNORE INTO business_settings (setting_key, setting_value) VALUES (?, ?)',
+      'INSERT INTO business_settings (setting_key, setting_value) VALUES (?, ?) ON CONFLICT (setting_key) DO NOTHING',
       [key, value]
     );
   }
@@ -213,10 +257,10 @@ async function initDatabase() {
 
   await run(`
     CREATE TABLE IF NOT EXISTS bundles (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id ${idPrimaryKey},
       name TEXT NOT NULL,
       description TEXT NOT NULL,
-      price REAL NOT NULL,
+      price ${priceType} NOT NULL,
       booking_service_id INTEGER NOT NULL,
       active INTEGER DEFAULT 1
     );
@@ -232,7 +276,7 @@ async function initDatabase() {
 
   await run(`
     CREATE TABLE IF NOT EXISTS employee_accounts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      id ${idPrimaryKey},
       barber_id INTEGER NOT NULL UNIQUE,
       username TEXT NOT NULL UNIQUE,
       password_salt TEXT NOT NULL,
@@ -244,18 +288,18 @@ async function initDatabase() {
     CREATE TABLE IF NOT EXISTS employee_sessions (
       token_hash TEXT PRIMARY KEY,
       barber_id INTEGER NOT NULL,
-      expires_at INTEGER NOT NULL
+      expires_at ${expiryType} NOT NULL
     );
   `);
 
   await run(
-    `INSERT OR IGNORE INTO business_settings (setting_key, setting_value)
-     VALUES ('country', ?)` ,
+    `INSERT INTO business_settings (setting_key, setting_value)
+     VALUES ('country', ?) ON CONFLICT (setting_key) DO NOTHING`,
     [defaultCountry]
   );
 
   const serviceCount = await get('SELECT COUNT(*) as count FROM services');
-  if (serviceCount.count === 0) {
+  if (Number(serviceCount.count) === 0) {
     await run(`INSERT INTO services (name, price, duration) VALUES
       ('Classic Haircut', 15, 30),
       ('Skin Fade', 18, 40),
@@ -265,7 +309,7 @@ async function initDatabase() {
   }
 
   const barberCount = await get('SELECT COUNT(*) as count FROM barbers');
-  if (barberCount.count === 0) {
+  if (Number(barberCount.count) === 0) {
     await run(`INSERT INTO barbers (name, title, image) VALUES
       ('Marcus Reid', 'Senior Barber', 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80'),
       ('Daniel Ross', 'Fade Specialist', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80'),
@@ -274,7 +318,7 @@ async function initDatabase() {
   }
 
   const workHoursCount = await get('SELECT COUNT(*) as count FROM working_hours');
-  if (workHoursCount.count === 0) {
+  if (Number(workHoursCount.count) === 0) {
     const barbers = await all('SELECT id FROM barbers WHERE active = 1');
     const rows = [];
     for (const barber of barbers) {
@@ -457,7 +501,7 @@ app.put('/api/admin/settings', requireAdmin, async (req, res) => {
   try {
     for (const [key, value] of Object.entries(settings)) {
       await run(
-        'INSERT OR REPLACE INTO business_settings (setting_key, setting_value) VALUES (?, ?)',
+        'INSERT INTO business_settings (setting_key, setting_value) VALUES (?, ?) ON CONFLICT (setting_key) DO UPDATE SET setting_value = excluded.setting_value',
         [key, value]
       );
     }
@@ -703,10 +747,14 @@ app.get('/api/services', async (req, res) => {
 });
 
 async function getBundles() {
+  const aggregate = pool ? 'STRING_AGG' : 'GROUP_CONCAT';
+  const includedServiceIds = pool
+    ? "STRING_AGG(s.id::text, ',')"
+    : "GROUP_CONCAT(s.id, ',')";
   return all(`
     SELECT b.id, b.name, b.description, b.price, b.booking_service_id,
-      GROUP_CONCAT(s.name, ', ') AS included_services,
-      GROUP_CONCAT(s.id, ',') AS included_service_ids
+      ${aggregate}(s.name, ', ') AS included_services,
+      ${includedServiceIds} AS included_service_ids
     FROM bundles b
     LEFT JOIN bundle_services bs ON bs.bundle_id = b.id
     LEFT JOIN services s ON s.id = bs.service_id
@@ -776,11 +824,11 @@ app.post('/api/admin/bundles', requireAdmin, async (req, res) => {
     }
     const duration = services.reduce((total, service) => total + Number(service.duration), 0);
     const serviceResult = await run(
-      'INSERT INTO services (name, price, duration, active) VALUES (?, ?, ?, 1)',
+      'INSERT INTO services (name, price, duration, active) VALUES (?, ?, ?, 1) RETURNING id',
       [bundle.name, bundle.price, duration]
     );
     const bundleResult = await run(
-      'INSERT INTO bundles (name, description, price, booking_service_id, active) VALUES (?, ?, ?, ?, 1)',
+      'INSERT INTO bundles (name, description, price, booking_service_id, active) VALUES (?, ?, ?, ?, 1) RETURNING id',
       [bundle.name, bundle.description, bundle.price, serviceResult.id]
     );
     for (const serviceId of bundle.serviceIds) {
@@ -889,7 +937,7 @@ app.post('/api/bookings', async (req, res) => {
     const reference = `SAL-${Date.now().toString().slice(-6)}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
     const insertResult = await run(
       `INSERT INTO appointments (service_id, barber_id, appointment_date, appointment_time, customer_name, phone, email, reference, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending') RETURNING id`,
       [Number(serviceId), Number(barberId), date, time, customerName, phone, email || '', reference]
     );
 
@@ -985,7 +1033,7 @@ app.post('/api/admin/services', requireAdmin, async (req, res) => {
   }
 
   try {
-    const item = await run('INSERT INTO services (name, price, duration) VALUES (?, ?, ?)', [name, Number(price), Number(duration)]);
+    const item = await run('INSERT INTO services (name, price, duration) VALUES (?, ?, ?) RETURNING id', [name, Number(price), Number(duration)]);
     const service = await get('SELECT * FROM services WHERE id = ?', [item.id]);
     res.status(201).json({ success: true, service });
   } catch (error) {
@@ -1051,7 +1099,7 @@ app.post('/api/admin/barbers', requireAdmin, async (req, res) => {
   }
 
   try {
-    const item = await run('INSERT INTO barbers (name, title, image) VALUES (?, ?, ?)', [name, title || '', image || '']);
+    const item = await run('INSERT INTO barbers (name, title, image) VALUES (?, ?, ?) RETURNING id', [name, title || '', image || '']);
     const barber = await get('SELECT * FROM barbers WHERE id = ?', [item.id]);
     res.status(201).json({ success: true, barber });
   } catch (error) {
@@ -1159,7 +1207,7 @@ app.post('/api/admin/unavailable-dates', requireAdmin, async (req, res) => {
   }
 
   try {
-    const item = await run('INSERT INTO unavailable_dates (barber_id, date, reason) VALUES (?, ?, ?)', [Number(barberId), date, reason || '']);
+    const item = await run('INSERT INTO unavailable_dates (barber_id, date, reason) VALUES (?, ?, ?) RETURNING id', [Number(barberId), date, reason || '']);
     const record = await get('SELECT * FROM unavailable_dates WHERE id = ?', [item.id]);
     res.status(201).json({ success: true, record });
   } catch (error) {
@@ -1211,17 +1259,18 @@ app.get('*', (req, res) => {
 
 async function startServer() {
   await initDatabase();
+  if (process.argv.includes('--init-db')) {
+    if (pool) await pool.end();
+    if (db) db.close();
+    return;
+  }
   app.listen(PORT, () => {
     console.log(`Salon booking app running on http://localhost:${PORT}`);
-    console.log(`Admin login: username admin / password ${ADMIN_PASSWORD}`);
   });
 }
 
 startServer();
 
 process.on('SIGINT', () => {
-  if (db && typeof db.close === 'function') {
-    db.close();
-  }
-  process.exit(0);
+  Promise.resolve(pool ? pool.end() : db?.close()).finally(() => process.exit(0));
 });

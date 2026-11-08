@@ -20,6 +20,14 @@ A responsive barber salon website with a simple 4-step appointment booking flow 
 - Add/edit/remove services and barbers
 - Set working hours and block unavailable dates
 
+## Free deployment with Neon and Render
+1. Create a Neon project and copy its pooled PostgreSQL connection string.
+2. Create a Render Web Service from the GitHub repository `hlucianoo093-maker/hstyle`, branch `main`. The included `render.yaml` uses `npm ci` and `npm start` on the free plan.
+3. Set `DATABASE_URL` to the Neon connection string and `ADMIN_PASSWORD` to a long, unique password in Render's environment settings. `NODE_ENV` is set to `production` by the blueprint.
+4. To carry over the local SQLite data, copy `.env.example` to `.env`, set `DATABASE_URL` to the same Neon connection string, then run `npm run db:migrate-sqlite` before accepting live bookings. The importer refuses to run if Neon already has appointments. Employee sessions are intentionally not migrated, so employees sign in again.
+
+The app uses local SQLite for development when `DATABASE_URL` is absent, and Neon PostgreSQL when it is present. Never commit `.env` or share the Neon connection string. Keep the Render and Neon regions close to reduce latency.
+
 ## Run locally
 1. Install dependencies:
    npm install

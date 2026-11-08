@@ -5,11 +5,15 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "db:init-neon": "node server.js --init-db",
+    "db:migrate-sqlite": "node scripts/migrate-sqlite-to-neon.js"
   },
   "dependencies": {
     "cookie-parser": "^1.4.7",
+    "dotenv": "^18.0.9",
     "express": "^4.21.2",
+    "pg": "^8.23.1",
     "sql.js": "^1.15.2"
   }
 }
