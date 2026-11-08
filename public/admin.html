@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#10110f" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/admin-manifest.webmanifest" />
+    <title>Salon Owner | Old Gold</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="admin-body">
+    <main class="admin-login-wrap" id="loginPanel">
+      <section class="admin-login-card">
+        <a class="admin-brand" href="/" aria-label="Old Gold home">
+          <span class="admin-brand-mark"><img class="business-logo-image hidden" alt="" /><span class="business-logo-initials">OG</span></span>
+          <span class="business-brand-name">OLD GOLD<small class="business-brand-subtitle">BARBER STUDIO</small></span>
+        </a>
+        <p class="admin-kicker">SALON OWNER PORTAL</p>
+        <h1>Welcome back.</h1>
+        <p class="admin-login-copy">Sign in to manage your appointments and salon.</p>
+        <button type="button" class="pwa-install-button" id="installAdminLoginApp" hidden>Install admin app</button>
+        <form id="loginForm" class="admin-form login-form">
+          <label for="adminPassword">Password</label>
+          <input id="adminPassword" type="password" name="password" placeholder="Enter your password" autocomplete="current-password" required />
+          <button type="submit" class="admin-primary-button">Sign in <span aria-hidden="true">→</span></button>
+          <p class="admin-login-error" id="loginError" role="alert"></p>
+        </form>
+        <a class="login-home-link" href="/">← Back to salon website</a>
+      </section>
+    </main>
+
+    <div class="admin-app hidden" id="adminContent">
+      <aside class="admin-sidebar">
+        <a class="admin-brand" href="/" aria-label="Old Gold home">
+          <span class="admin-brand-mark"><img class="business-logo-image hidden" alt="" /><span class="business-logo-initials">OG</span></span>
+          <span class="business-brand-name">OLD GOLD<small class="business-brand-subtitle">BARBER STUDIO</small></span>
+        </a>
+
+        <div class="sidebar-label">WORKSPACE</div>
+        <nav class="admin-nav" aria-label="Salon management">
+          <button type="button" class="admin-nav-link active" data-page="overview">
+            <span class="nav-icon">⌂</span><span>Overview</span>
+          </button>
+          <button type="button" class="admin-nav-link" data-page="appointments">
+            <span class="nav-icon">▦</span><span>Appointments</span>
+            <span class="nav-count" id="pendingCount">0</span>
+          </button>
+          <button type="button" class="admin-nav-link" data-page="services">
+            <span class="nav-icon">✂</span><span>Services</span>
+          </button>
+          <button type="button" class="admin-nav-link" data-page="barbers">
+            <span class="nav-icon">♙</span><span>Barbers</span>
+          </button>
+          <button type="button" class="admin-nav-link" data-page="schedule">
+            <span class="nav-icon">◷</span><span>Schedule</span>
+          </button>
+          <button type="button" class="admin-nav-link" data-page="settings">
+            <span class="nav-icon">⚙</span><span>Settings</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <a class="sidebar-site-link" href="/">↗ <span>View salon website</span></a>
+          <div class="sidebar-profile">
+            <div class="profile-avatar">OG</div>
+            <div><strong>Salon owner</strong><small>Administrator</small></div>
+            <button type="button" id="logoutBtn" class="logout-button" aria-label="Sign out" title="Sign out">↗</button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="admin-main">
+        <header class="admin-topbar">
+          <div class="mobile-brand">
+            <span class="admin-brand-mark"><img class="business-logo-image hidden" alt="" /><span class="business-logo-initials">OG</span></span><strong class="mobile-business-name">OLD GOLD</strong>
+          </div>
+          <div class="admin-breadcrumb"><span>Workspace</span><span>/</span><strong id="pageBreadcrumb">Overview</strong></div>
+          <div class="topbar-actions">
+            <span class="salon-open-indicator"><i></i> Studio dashboard</span>
+            <button type="button" class="pwa-install-button" id="installAdminApp" hidden>Install app</button>
+            <a class="topbar-site-link" href="/">View website ↗</a>
+          </div>
+        </header>
+
+        <div class="admin-content">
+          <section class="admin-page active" data-page-panel="overview">
+            <div class="page-heading">
+              <div><p class="admin-kicker" id="todayLabel">YOUR SALON AT A GLANCE</p><h1>Good day.</h1><p>Here’s what’s happening at your studio.</p></div>
+              <button type="button" class="admin-primary-button" data-go-page="appointments">View appointments <span aria-hidden="true">→</span></button>
+            </div>
+
+            <div class="stat-grid">
+              <article class="stat-card"><div class="stat-label">Appointments today <span class="stat-symbol">▦</span></div><strong id="todayAppointments">0</strong><small>Bookings scheduled for today</small></article>
+              <article class="stat-card"><div class="stat-label">Needs confirmation <span class="stat-symbol gold">◷</span></div><strong id="pendingAppointments">0</strong><small>Pending customer bookings</small></article>
+              <article class="stat-card"><div class="stat-label">Active services <span class="stat-symbol">✂</span></div><strong id="activeServices">0</strong><small>Available to book online</small></article>
+              <article class="stat-card"><div class="stat-label"><span id="teamStatLabel">Your barbers</span><span class="stat-symbol">♙</span></div><strong id="activeBarbers">0</strong><small id="teamStatCaption">On your studio team</small></article>
+            </div>
+
+            <section class="admin-panel dashboard-panel">
+              <div class="panel-heading"><div><p class="admin-kicker">THE LATEST</p><h2>Recent appointments</h2></div><button type="button" class="text-button" data-go-page="appointments">All appointments <span>→</span></button></div>
+              <div id="recentAppointments" class="appointment-list"></div>
+            </section>
+          </section>
+
+          <section class="admin-page" data-page-panel="appointments">
+            <div class="page-heading">
+              <div><p class="admin-kicker">YOUR SALON SCHEDULE</p><h1>Appointments</h1><p>Review bookings and keep your day running smoothly.</p></div>
+            </div>
+            <section class="admin-panel">
+              <div class="panel-heading appointment-tools">
+                <div><p class="admin-kicker">BOOKING MANAGEMENT</p><h2>All appointments</h2></div>
+                <div class="appointment-filters">
+                  <input id="appointmentSearch" type="search" placeholder="Search name or phone" aria-label="Search appointments" />
+                  <input id="appointmentDateFilter" type="date" aria-label="Filter appointments by date" />
+                  <button type="button" class="filter-clear-button" id="clearAppointmentFilters">Clear</button>
+                </div>
+              </div>
+              <div id="appointmentsList" class="appointment-list"></div>
+            </section>
+          </section>
+
+          <section class="admin-page" data-page-panel="services">
+            <div class="page-heading">
+              <div><p class="admin-kicker">YOUR MENU</p><h1>Services</h1><p>Keep your grooming menu and pricing up to date.</p></div>
+            </div>
+            <div class="management-layout">
+              <section class="admin-panel management-list-panel"><div class="panel-heading"><div><p class="admin-kicker">AVAILABLE TO CUSTOMERS</p><h2>Your services</h2></div></div><div id="serviceList" class="management-list"></div></section>
+              <section class="admin-panel form-panel">
+                <div class="panel-heading"><div><p class="admin-kicker">SERVICE DETAILS</p><h2 id="serviceFormHeading">Add a service</h2></div></div>
+                <form id="serviceForm" class="admin-form">
+                  <label for="serviceName">Service name</label><input id="serviceName" name="name" placeholder="e.g. Classic Haircut" required />
+                  <div class="form-pair"><div>                  <label for="servicePrice">Price (<span id="serviceCurrencyLabel">EUR</span>)</label><input id="servicePrice" name="price" type="number" min="0.01" step="0.01" placeholder="15.00" required /></div><div><label for="serviceDuration">Duration (min)</label><input id="serviceDuration" name="duration" type="number" min="1" step="1" placeholder="30" required /></div></div>
+                  <div class="form-buttons"><button type="submit" class="admin-primary-button" id="serviceSubmit">Add service <span aria-hidden="true">→</span></button><button type="button" class="admin-secondary-button hidden" id="cancelServiceEdit">Cancel</button></div>
+                </form>
+              </section>
+            </div>
+            <section class="admin-panel bundle-admin-panel">
+              <div class="panel-heading"><div><p class="admin-kicker">GREAT VALUE FOR CLIENTS</p><h2>Service bundles</h2></div></div>
+              <div class="bundle-admin-layout">
+                <div id="bundleAdminList" class="management-list"></div>
+                <form id="bundleForm" class="admin-form bundle-form">
+                  <h3 id="bundleFormHeading">Create a bundle</h3>
+                  <label for="bundleName">Bundle name</label><input id="bundleName" name="name" placeholder="e.g. Refresh package" maxlength="80" required />
+                  <label for="bundleDescription">Short description</label><textarea id="bundleDescription" name="description" rows="3" maxlength="500" placeholder="Tell clients what is included" required></textarea>
+                  <label>Included services</label><div id="bundleServiceChoices" class="bundle-service-choices"></div>
+                  <label for="bundlePrice">Bundle price (<span class="currencyLabel">MKD</span>)</label><input id="bundlePrice" name="price" type="number" min="0.01" step="0.01" required />
+                  <div class="form-buttons"><button type="submit" class="admin-primary-button" id="bundleSubmit">Create bundle <span aria-hidden="true">→</span></button><button type="button" class="admin-secondary-button hidden" id="cancelBundleEdit">Cancel</button></div>
+                </form>
+              </div>
+            </section>
+          </section>
+
+          <section class="admin-page" data-page-panel="barbers">
+            <div class="page-heading">
+              <div><p class="admin-kicker" id="teamPageKicker">THE PEOPLE BEHIND THE CUT</p><h1 id="teamPageTitle">Barbers</h1><p id="teamPageDescription">Manage your team and the profiles customers see.</p></div>
+            </div>
+            <div class="management-layout">
+              <section class="admin-panel management-list-panel"><div class="panel-heading"><div><p class="admin-kicker" id="teamListKicker">YOUR TEAM</p><h2 id="teamListTitle">Studio barbers</h2></div></div><div id="barberList" class="management-list"></div></section>
+              <section class="admin-panel form-panel">
+                <div class="panel-heading"><div><p class="admin-kicker">TEAM PROFILE</p><h2 id="barberFormHeading">Add a barber</h2></div></div>
+                <form id="barberForm" class="admin-form">
+                  <label for="barberName">Full name</label><input id="barberName" name="name" placeholder="Barber name" required />
+                  <label for="barberTitle">Specialty or role</label><input id="barberTitle" name="title" placeholder="e.g. Fade Specialist" />
+                  <label for="barberImage">Profile image URL</label><input id="barberImage" name="image" type="url" placeholder="https://…" />
+                  <div class="form-buttons"><button type="submit" class="admin-primary-button" id="barberSubmit">Add barber <span aria-hidden="true">→</span></button><button type="button" class="admin-secondary-button hidden" id="cancelBarberEdit">Cancel</button></div>
+                </form>
+              </section>
+            </div>
+            <section class="admin-panel employee-access-panel">
+              <div class="panel-heading"><div><p class="admin-kicker">TEAM PORTAL</p><h2>Employee logins</h2><p class="panel-subtitle">Create individual sign-ins so team members can view only their assigned bookings.</p></div></div>
+              <div class="employee-access-layout">
+                <div id="employeeList" class="management-list"></div>
+                <form id="employeeForm" class="admin-form employee-form">
+                  <h3 id="employeeFormHeading">Create employee login</h3>
+                  <label for="employeeBarber">Team member</label><select id="employeeBarber" name="barberId" required></select>
+                  <label for="employeeUsername">Username</label><input id="employeeUsername" name="username" minlength="3" maxlength="40" pattern="[A-Za-z0-9._-]{3,40}" placeholder="e.g. marcus.reid" required />
+                  <label for="employeePassword">Temporary password</label><input id="employeePassword" name="password" type="password" minlength="10" maxlength="200" placeholder="At least 10 characters" required />
+                  <p class="settings-hint">Share credentials privately. Passwords are stored as salted hashes.</p>
+                  <div class="form-buttons"><button type="submit" class="admin-primary-button" id="employeeSubmit">Create login <span aria-hidden="true">→</span></button><button type="button" class="admin-secondary-button hidden" id="cancelEmployeeEdit">Cancel</button></div>
+                </form>
+              </div>
+            </section>
+          </section>
+
+          <section class="admin-page" data-page-panel="schedule">
+            <div class="page-heading">
+              <div><p class="admin-kicker">WHEN YOUR STUDIO IS OPEN</p><h1>Schedule</h1><p>Set regular working hours and block dates when a barber is unavailable.</p></div>
+            </div>
+            <div class="schedule-layout">
+              <section class="admin-panel">
+                <div class="panel-heading"><div><p class="admin-kicker">REGULAR HOURS</p><h2>Working hours</h2></div></div>
+                <form id="hoursForm" class="admin-form schedule-form">
+                  <label for="hoursBarber">Barber</label><select id="hoursBarber" name="barberId" required></select>
+                  <label for="hoursDay">Day of the week</label>
+                  <select id="hoursDay" name="dayOfWeek" required><option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option><option value="0">Sunday</option></select>
+                  <div class="form-pair"><div><label for="startTime">Opens</label><input id="startTime" name="startTime" type="time" value="09:00" required /></div><div><label for="endTime">Closes</label><input id="endTime" name="endTime" type="time" value="18:00" required /></div></div>
+                  <button type="submit" class="admin-primary-button">Save working hours <span aria-hidden="true">→</span></button>
+                </form>
+                <div class="schedule-list-wrap"><p class="admin-kicker">CURRENT SETUP</p><div id="workingHoursList" class="schedule-list"></div></div>
+              </section>
+              <section class="admin-panel">
+                <div class="panel-heading"><div><p class="admin-kicker">TIME OFF</p><h2>Unavailable dates</h2></div></div>
+                <form id="unavailableForm" class="admin-form schedule-form">
+                  <label for="unavailableBarber">Barber</label><select id="unavailableBarber" name="barberId" required></select>
+                  <label for="unavailableDate">Date</label><input id="unavailableDate" name="date" type="date" required />
+                  <label for="unavailableReason">Note <span class="optional-label">Optional</span></label><input id="unavailableReason" name="reason" placeholder="e.g. Annual leave" />
+                  <button type="submit" class="admin-primary-button">Block this date <span aria-hidden="true">→</span></button>
+                </form>
+                <div class="schedule-list-wrap"><p class="admin-kicker">UPCOMING BLOCKS</p><div id="unavailableDatesList" class="schedule-list"></div></div>
+              </section>
+            </div>
+          </section>
+
+          <section class="admin-page" data-page-panel="settings">
+            <div class="page-heading">
+              <div><p class="admin-kicker">MAKE IT YOURS</p><h1>Business settings</h1><p>Set your brand identity, business type, currency, and language preferences.</p></div>
+            </div>
+            <form id="settingsForm" class="settings-layout">
+              <section class="admin-panel settings-main-panel">
+                <div class="panel-heading"><div><p class="admin-kicker">BRAND IDENTITY</p><h2>Your business</h2></div></div>
+                <div class="settings-form-fields">
+                  <label for="businessName">Business name</label>
+                  <input id="businessName" name="businessName" maxlength="80" placeholder="e.g. Old Gold Studio" required />
+                  <label for="businessLogoUrl">Logo image URL <span class="optional-label">Optional</span></label>
+                  <input id="businessLogoUrl" name="logoUrl" type="url" placeholder="https://example.com/logo.png" />
+                  <p class="settings-hint">Use a public HTTPS image URL. Leave empty to show your business initials.</p>
+                  <div class="logo-preview-wrap">
+                    <span class="logo-preview-caption">LOGO PREVIEW</span>
+                    <div class="logo-preview" id="logoPreview">
+                      <img id="logoPreviewImage" class="hidden" alt="Business logo preview" />
+                      <span id="logoPreviewInitials">OG</span>
+                    </div>
+                    <strong id="logoPreviewName">Old Gold</strong>
+                  </div>
+                </div>
+
+                <div class="settings-divider"></div>
+                <div class="panel-heading"><div><p class="admin-kicker">CHOOSE YOUR LOOK</p><h2>Business type</h2></div></div>
+                <div class="business-type-options">
+                  <label class="business-type-card">
+                    <input type="radio" name="businessType" value="salon" />
+                    <span class="business-type-art salon-art">✿</span>
+                    <span class="business-type-copy"><strong>Salon</strong><small>Soft, refined studio style</small></span>
+                    <span class="business-type-check">✓</span>
+                  </label>
+                  <label class="business-type-card">
+                    <input type="radio" name="businessType" value="barber" />
+                    <span class="business-type-art barber-art">✂</span>
+                    <span class="business-type-copy"><strong>Barber</strong><small>Classic, tailored barbershop style</small></span>
+                    <span class="business-type-check">✓</span>
+                  </label>
+                </div>
+              </section>
+
+              <div class="settings-side-column">
+                <section class="admin-panel">
+                  <div class="panel-heading"><div><p class="admin-kicker">REGIONAL PREFERENCES</p><h2>Language & currency</h2></div></div>
+                  <div class="settings-form-fields">
+                    <label for="businessCountry">Business location</label>
+                    <select id="businessCountry" name="country">
+                      <option value="MK">North Macedonia</option>
+                      <option value="XK">Kosovo</option>
+                    </select>
+                    <p class="settings-hint">Currency is fixed by location: North Macedonia uses MKD; Kosovo uses EUR.</p>
+                    <label>Website languages</label>
+                    <div class="language-choice-list">
+                      <label><input type="checkbox" name="supportedLanguages" value="mk" /> Македонски</label>
+                      <label><input type="checkbox" name="supportedLanguages" value="sq" /> Shqip</label>
+                    </div>
+                    <label for="businessLanguage">Default language</label>
+                    <select id="businessLanguage" name="language">
+                      <option value="mk">Македонски</option>
+                      <option value="sq">Shqip</option>
+                    </select>
+                    <p class="settings-hint">Clients can switch between the enabled languages in the website footer.</p>
+                  </div>
+                </section>
+                <section class="admin-panel">
+                  <div class="panel-heading"><div><p class="admin-kicker">STAY CONNECTED</p><h2>Reviews & socials</h2></div></div>
+                  <div class="settings-form-fields">
+                    <label for="googleReviewUrl">Google review link</label><input id="googleReviewUrl" name="googleReviewUrl" type="url" placeholder="https://g.page/r/…/review" />
+                    <label for="facebookUrl">Facebook page</label><input id="facebookUrl" name="facebookUrl" type="url" placeholder="https://facebook.com/…" />
+                    <label for="instagramUrl">Instagram profile</label><input id="instagramUrl" name="instagramUrl" type="url" placeholder="https://instagram.com/…" />
+                    <p class="settings-hint">Only the links you provide will be shown in your public footer.</p>
+                  </div>
+                </section>
+                <section class="settings-save-panel">
+                  <div><strong>Ready to update?</strong><span>Your changes will appear on the booking website.</span></div>
+                  <button type="submit" class="admin-primary-button" id="saveSettingsButton">Save settings <span aria-hidden="true">→</span></button>
+                  <p id="settingsError" class="settings-error" role="alert"></p>
+                  <div class="landing-preview-links">
+                    <a href="/salon" target="_blank" rel="noopener">Preview Salon page ↗</a>
+                    <a href="/barber" target="_blank" rel="noopener">Preview Barber page ↗</a>
+                  </div>
+                </section>
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+      <nav class="mobile-app-nav" aria-label="Admin app navigation">
+        <button type="button" class="mobile-app-nav-link admin-nav-link active" data-page="overview"><span aria-hidden="true">⌂</span><small>Home</small></button>
+        <button type="button" class="mobile-app-nav-link admin-nav-link" data-page="appointments"><span aria-hidden="true">▦</span><small>Bookings</small><span class="mobile-nav-count" id="mobilePendingCount">0</span></button>
+        <button type="button" class="mobile-app-nav-link admin-nav-link" data-page="services"><span aria-hidden="true">✂</span><small>Services</small></button>
+        <button type="button" class="mobile-app-nav-link admin-nav-link" data-page="barbers"><span aria-hidden="true">♙</span><small>Team</small></button>
+        <button type="button" class="mobile-app-nav-link" id="mobileMoreButton" aria-expanded="false" aria-controls="mobileMoreMenu"><span aria-hidden="true">•••</span><small>More</small></button>
+      </nav>
+      <div class="mobile-more-menu hidden" id="mobileMoreMenu">
+        <button type="button" class="admin-nav-link" data-page="schedule">◷ <span>Schedule</span></button>
+        <button type="button" class="admin-nav-link" data-page="settings">⚙ <span>Settings</span></button>
+        <a href="/">↗ <span>View website</span></a>
+        <button type="button" id="mobileLogoutButton">⇥ <span>Sign out</span></button>
+      </div>
+    </div>
+
+    <div class="admin-toast" id="adminToast" role="status" aria-live="polite"></div>
+    <script src="admin.js"></script>
+    <script src="pwa.js"></script>
+  </body>
+</html>

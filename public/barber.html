@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Thoughtful barbering, precision cuts, and easy online appointments." />
+    <title>Old Gold Barber Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-business-type="barber" data-landing-type="barber">
+    <header class="topbar">
+      <div class="container nav">
+        <a class="brand" id="siteBrand" href="/"><img id="siteLogo" class="site-logo hidden" alt="" /><span id="siteBusinessName">Old Gold</span></a>
+        <nav aria-label="Main navigation">
+          <a href="#services">Services</a>
+          <a href="#barbers">Barbers</a>
+          <a href="#reviews">Reviews</a>
+          <a href="#contact">Contact</a>
+        </nav>
+        <a class="button button-small" href="#booking">Book now</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero barber-landing-hero">
+        <div class="container hero-inner">
+          <div class="hero-copy">
+            <p class="eyebrow" id="heroEyebrow">Precision barbering</p>
+            <h1 id="heroHeadline">Look Sharp. Feel Confident.</h1>
+            <p class="intro" id="heroIntro">Precision cuts, refined details, and a modern barber experience built for the way you live.</p>
+            <div class="cta-row">
+              <a class="button" href="#booking">Book an Appointment</a>
+              <a class="button button-ghost" href="#services">Explore Services</a>
+            </div>
+            <ul class="highlights">
+              <li>Premium grooming</li>
+              <li>Fast, easy booking</li>
+              <li>Trusted by local clients</li>
+            </ul>
+            <div class="card-badge hero-rating"><span>4.9/5</span><small>Client rating</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="services" class="section">
+        <div class="container">
+          <div class="section-heading"><p class="eyebrow">The menu</p><h2>Sharp cuts with classic detail.</h2></div>
+          <div id="service-list" class="service-grid"></div>
+        </div>
+      </section>
+
+      <section id="bundles" class="section alt-section">
+        <div class="container">
+          <div class="section-heading"><p class="eyebrow">Curated packages</p><h2>More grooming, together.</h2><p>Explore thoughtful combinations created by our barbershop.</p></div>
+          <div id="bundle-list" class="bundle-grid"></div>
+        </div>
+      </section>
+
+      <section id="booking" class="section booking-section">
+        <div class="container booking-wrap">
+          <div class="booking-copy">
+            <p class="eyebrow">Easy booking</p>
+            <h2>Make time for a sharper you.</h2>
+            <p>Choose your service, barber, and a real available time. Your appointment is confirmed in just a few steps.</p>
+          </div>
+          <div class="booking-card">
+            <div class="progress" aria-label="Booking progress"><span class="step active">1</span><span class="step">2</span><span class="step">3</span><span class="step">4</span></div>
+            <form id="booking-form">
+              <div class="form-step active" data-step="1">
+                <label for="serviceSelect">Choose Service</label><select id="serviceSelect" name="serviceId" required></select>
+                <div class="step-actions"><button type="button" class="button next-step">Next</button></div>
+              </div>
+              <div class="form-step" data-step="2">
+                <label for="barberSelect" id="barberSelectLabel">Choose Barber</label><select id="barberSelect" name="barberId" required></select>
+                <div class="step-actions two-buttons"><button type="button" class="button button-ghost prev-step">Back</button><button type="button" class="button next-step">Next</button></div>
+              </div>
+              <div class="form-step" data-step="3">
+                <label for="bookingDate">Choose Date</label><input id="bookingDate" type="date" name="date" required />
+                <label class="slots-label" for="timeSlot">Available Time</label><div id="timeSlots" class="time-slots"></div>
+                <div class="step-actions two-buttons"><button type="button" class="button button-ghost prev-step">Back</button><button type="button" class="button next-step">Next</button></div>
+              </div>
+              <div class="form-step" data-step="4">
+                <div class="field-row">
+                  <div><label for="customerName">Full Name</label><input id="customerName" name="customerName" type="text" placeholder="Your name" required /></div>
+                  <div><label for="phone">Phone Number</label><input id="phone" name="phone" type="tel" placeholder="(555) 123-4567" required /></div>
+                </div>
+                <label for="email">Email (Optional)</label><input id="email" name="email" type="email" placeholder="you@example.com" />
+                <div class="step-actions two-buttons"><button type="button" class="button button-ghost prev-step">Back</button><button type="submit" class="button">Confirm Booking</button></div>
+              </div>
+            </form>
+            <div id="bookingSuccess" class="success hidden"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="barbers" class="section alt-section">
+        <div class="container">
+          <div class="section-heading"><p class="eyebrow" id="teamEyebrow">Meet our barbers</p><h2 id="teamHeadline">Crafted by professionals.</h2></div>
+          <div id="barber-list" class="barber-grid"></div>
+        </div>
+      </section>
+
+      <section id="reviews" class="section">
+        <div class="container">
+          <div class="section-heading"><p class="eyebrow">Testimonials</p><h2>Clients keep coming back.</h2></div>
+          <div class="reviews-grid">
+            <article class="review-card"><p>“The fade was flawless and the attention to detail was unreal. Fast, clean, and professional.”</p><div class="reviewer"><strong>Jordan M.</strong><span>★★★★★</span></div></article>
+            <article class="review-card"><p>“I booked my haircut in seconds and loved the experience from start to finish. Very polished.”</p><div class="reviewer"><strong>Chris T.</strong><span>★★★★★</span></div></article>
+            <article class="review-card"><p>“The beard trim and hot towel service is a game-changer. This place is worth every minute.”</p><div class="reviewer"><strong>Sam R.</strong><span>★★★★★</span></div></article>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="section contact-section">
+        <div class="container contact-grid">
+          <div><p class="eyebrow">Visit us</p><h2>Book in person or online.</h2><ul class="contact-list"><li>32 Mercer Street, London</li><li>Mon – Sat: 9:00 AM – 7:00 PM</li><li>(020) 555-0149</li><li>hello@oldgoldbarber.co</li></ul></div>
+          <div class="map-card"><div class="map-overlay"><span>Premium grooming studio</span></div></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-main">
+        <div class="footer-brand"><a class="brand" href="/" id="footerBusinessName">Old Gold</a><p id="footerTagline">Great grooming, made easy to book.</p></div>
+        <div class="footer-links"><a href="#booking">Create a booking</a><a href="/employee">Employee sign in</a><a href="/admin">Owner portal</a></div>
+        <div class="footer-links"><a id="googleReviewLink" class="hidden" target="_blank" rel="noopener noreferrer">Write a Google review ↗</a><a id="facebookLink" class="hidden" target="_blank" rel="noopener noreferrer">Facebook ↗</a><a id="instagramLink" class="hidden" target="_blank" rel="noopener noreferrer">Instagram ↗</a></div>
+      </div>
+      <div class="container footer-bottom"><span>© 2026 <span id="footerBusinessNameCopy">Old Gold</span>. <span id="footerCopyrightSuffix">All rights reserved.</span></span><label class="language-switcher"><span>Language</span><select id="languageSwitcher" aria-label="Choose language"></select></label></div>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A welcoming beauty studio for thoughtful treatments and easy online appointments." />
+    <title>Old Gold Beauty Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body data-business-type="salon" data-landing-type="salon">
+    <header class="topbar">
+      <div class="container nav">
+        <a class="brand" id="siteBrand" href="/"><img id="siteLogo" class="site-logo hidden" alt="" /><span id="siteBusinessName">Old Gold</span></a>
+        <nav aria-label="Main navigation">
+          <a href="#services">Treatments</a>
+          <a href="#barbers">Our team</a>
+          <a href="#reviews">Reviews</a>
+          <a href="#contact">Visit us</a>
+        </nav>
+        <a class="button button-small" href="#booking">Book a visit</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero salon-landing-hero">
+        <div class="container hero-inner">
+          <div class="hero-copy">
+            <p class="eyebrow" id="heroEyebrow">A moment just for you</p>
+            <h1 id="heroHeadline">Feel Beautiful. Be Yourself.</h1>
+            <p class="intro" id="heroIntro">Thoughtful beauty services, refined details, and a welcoming studio experience made around you.</p>
+            <div class="cta-row">
+              <a class="button" href="#booking">Book an Appointment</a>
+              <a class="button button-ghost" href="#services">Explore Treatments</a>
+            </div>
+            <ul class="highlights">
+              <li>Thoughtful beauty</li>
+              <li>Easy online booking</li>
+              <li>Care by trusted specialists</li>
+            </ul>
+            <div class="card-badge hero-rating"><span>4.9/5</span><small>Client rating</small></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="services" class="section salon-services-section">
+        <div class="container">
+          <div class="section-heading"><p class="eyebrow">Our treatments</p><h2>Care that feels like you.</h2><p>Personalized services, thoughtful details, and time to feel your best.</p></div>
+          <div id="service-list" class="service-grid"></div>
+        </div>
+      </section>
+
+      <section id="bundles" class="section alt-section">
+        <div class="container">
+          <div class="section-heading"><p class="eyebrow">Curated packages</p><h2>More care, together.</h2><p>Explore thoughtful combinations created by our studio.</p></div>
+          <div id="bundle-list" class="bundle-grid"></div>
+        </div>
+      </section>
+
+      <section id="booking" class="section booking-section salon-booking-section">
+        <div class="container booking-wrap">
+          <div class="booking-copy">
+            <p class="eyebrow">A few easy steps</p>
+            <h2>Your next little reset starts here.</h2>
+            <p>Choose your treatment, specialist, and a real available time. Book your visit in just a few steps.</p>
+          </div>
+          <div class="booking-card">
+            <div class="progress" aria-label="Booking progress"><span class="step active">1</span><span class="step">2</span><span class="step">3</span><span class="step">4</span></div>
+            <form id="booking-form">
+              <div class="form-step active" data-step="1">
+                <label for="serviceSelect">Choose Treatment</label><select id="serviceSelect" name="serviceId" required></select>
+                <div class="step-actions"><button type="button" class="button next-step">Next</button></div>
+              </div>
+              <div class="form-step" data-step="2">
+                <label for="barberSelect" id="barberSelectLabel">Choose Specialist</label><select id="barberSelect" name="barberId" required></select>
+                <div class="step-actions two-buttons"><button type="button" class="button button-ghost prev-step">Back</button><button type="button" class="button next-step">Next</button></div>
+              </div>
+              <div class="form-step" data-step="3">
+                <label for="bookingDate">Choose Date</label><input id="bookingDate" type="date" name="date" required />
+                <label class="slots-label" for="timeSlot">Available Time</label><div id="timeSlots" class="time-slots"></div>
+                <div class="step-actions two-buttons"><button type="button" class="button button-ghost prev-step">Back</button><button type="button" class="button next-step">Next</button></div>
+              </div>
+              <div class="form-step" data-step="4">
+                <div class="field-row">
+                  <div><label for="customerName">Full Name</label><input id="customerName" name="customerName" type="text" placeholder="Your name" required /></div>
+                  <div><label for="phone">Phone Number</label><input id="phone" name="phone" type="tel" placeholder="(555) 123-4567" required /></div>
+                </div>
+                <label for="email">Email (Optional)</label><input id="email" name="email" type="email" placeholder="you@example.com" />
+                <div class="step-actions two-buttons"><button type="button" class="button button-ghost prev-step">Back</button><button type="submit" class="button">Confirm Booking</button></div>
+              </div>
+            </form>
+            <div id="bookingSuccess" class="success hidden"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="barbers" class="section alt-section salon-team-section">
+        <div class="container">
+          <div class="section-heading"><p class="eyebrow" id="teamEyebrow">Meet our specialists</p><h2 id="teamHeadline">A little time, just for you.</h2></div>
+          <div id="barber-list" class="barber-grid"></div>
+        </div>
+      </section>
+
+      <section id="reviews" class="section salon-reviews-section">
+        <div class="container">
+          <div class="section-heading"><p class="eyebrow">Kind words</p><h2>A little love from our clients.</h2></div>
+          <div class="reviews-grid">
+            <article class="review-card"><p>“A beautiful experience from start to finish. The care and attention to detail were exceptional.”</p><div class="reviewer"><strong>Jordan M.</strong><span>★★★★★</span></div></article>
+            <article class="review-card"><p>“Booking was effortless and I left feeling refreshed. Such a lovely, professional studio.”</p><div class="reviewer"><strong>Chris T.</strong><span>★★★★★</span></div></article>
+            <article class="review-card"><p>“Thoughtful service in a welcoming space. I have already booked my next visit.”</p><div class="reviewer"><strong>Sam R.</strong><span>★★★★★</span></div></article>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="section contact-section salon-contact-section">
+        <div class="container contact-grid">
+          <div><p class="eyebrow">Come see us</p><h2>We saved you a little time.</h2><ul class="contact-list"><li>32 Mercer Street, London</li><li>Mon – Sat: 9:00 AM – 7:00 PM</li><li>(020) 555-0149</li><li>hello@oldgoldbarber.co</li></ul></div>
+          <div class="map-card"><div class="map-overlay"><span>Your neighborhood beauty studio</span></div></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer-main">
+        <div class="footer-brand"><a class="brand" href="/" id="footerBusinessName">Old Gold</a><p id="footerTagline">Thoughtful care, made easy to book.</p></div>
+        <div class="footer-links"><a href="#booking">Create a booking</a><a href="/employee">Employee sign in</a><a href="/admin">Owner portal</a></div>
+        <div class="footer-links"><a id="googleReviewLink" class="hidden" target="_blank" rel="noopener noreferrer">Write a Google review ↗</a><a id="facebookLink" class="hidden" target="_blank" rel="noopener noreferrer">Facebook ↗</a><a id="instagramLink" class="hidden" target="_blank" rel="noopener noreferrer">Instagram ↗</a></div>
+      </div>
+      <div class="container footer-bottom"><span>© 2026 <span id="footerBusinessNameCopy">Old Gold</span>. <span id="footerCopyrightSuffix">All rights reserved.</span></span><label class="language-switcher"><span>Language</span><select id="languageSwitcher" aria-label="Choose language"></select></label></div>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>

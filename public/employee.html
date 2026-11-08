@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0d0d0d" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <link rel="manifest" href="/employee-manifest.webmanifest" />
+    <meta name="description" content="Employee booking portal" />
+    <title>Employee Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="employee-portal">
+    <main class="employee-portal-main">
+      <header class="employee-portal-header">
+        <a class="brand employee-portal-brand" href="/">Studio bookings</a>
+        <label class="employee-language">
+          <span id="languageLabel">Language</span>
+          <select id="employeeLanguage" aria-label="Choose language">
+            <option value="mk">Македонски</option>
+            <option value="sq">Shqip</option>
+          </select>
+        </label>
+        <button type="button" class="pwa-install-button" id="installEmployeeApp" hidden>Install app</button>
+      </header>
+      <section class="employee-portal-card">
+        <p class="eyebrow" id="portalEyebrow">TEAM PORTAL</p>
+        <h1 id="portalHeading">Your appointments</h1>
+        <form id="employeeLoginForm" class="employee-login-form">
+          <label for="employeeUsername" id="usernameLabel">Username</label>
+          <input id="employeeUsername" name="username" autocomplete="username" required />
+          <label for="employeePassword" id="passwordLabel">Password</label>
+          <input id="employeePassword" name="password" type="password" autocomplete="current-password" required />
+          <p id="employeeLoginError" class="employee-portal-error" role="alert"></p>
+          <button type="submit" class="button" id="loginButton">Sign in</button>
+        </form>
+        <div id="employeeDashboard" class="hidden">
+          <div class="employee-clock" id="employeeClock" aria-label="Current local time">
+            <time id="currentTime"></time>
+            <span id="currentDate"></span>
+          </div>
+          <div class="employee-dashboard-heading">
+            <p id="employeeWelcome"></p>
+            <button type="button" class="admin-secondary-button" id="employeeLogout">Sign out</button>
+          </div>
+          <p id="employeeActionError" class="employee-portal-error" role="alert"></p>
+          <section class="employee-overview" aria-label="Employee overview">
+            <article class="employee-next-appointment">
+              <p class="employee-panel-label" id="employeeNextLabel">Next appointment</p>
+              <div id="employeeNextAppointment"></div>
+            </article>
+            <div class="employee-stat-grid">
+              <article class="employee-stat">
+                <span id="employeeMonthBookingsLabel">Bookings this month</span>
+                <strong id="employeeMonthBookings">0</strong>
+              </article>
+              <article class="employee-stat">
+                <span id="employeePendingLabel">Awaiting confirmation</span>
+                <strong id="employeePendingCount">0</strong>
+              </article>
+              <article class="employee-stat employee-stat-value">
+                <span id="employeeConfirmedValueLabel">Confirmed value this month</span>
+                <strong id="employeeConfirmedValue">0</strong>
+              </article>
+            </div>
+          </section>
+          <section class="employee-calendar" aria-labelledby="employeeCalendarMonth">
+            <div class="employee-calendar-heading">
+              <h2 id="employeeCalendarMonth"></h2>
+              <div class="employee-calendar-controls">
+                <button type="button" id="employeePreviousMonth" aria-label="Previous month">‹</button>
+                <button type="button" id="employeeNextMonth" aria-label="Next month">›</button>
+              </div>
+            </div>
+            <div id="employeeCalendar" class="employee-calendar-grid" role="grid"></div>
+            <p class="employee-selected-date" id="employeeSelectedDate"></p>
+          </section>
+          <h2 class="employee-appointments-heading" id="employeeAppointmentsHeading">Appointments</h2>
+          <div id="employeeAppointments" class="employee-appointments"></div>
+          <nav class="employee-mobile-nav" aria-label="Employee app navigation">
+            <button type="button" class="employee-mobile-nav-link" id="employeeAppointmentsNav"><span aria-hidden="true">▦</span><small id="employeeAppointmentsNavLabel">Appointments</small></button>
+            <button type="button" class="employee-mobile-nav-link" id="employeeLogoutNav"><span aria-hidden="true">⇥</span><small id="employeeLogoutNavLabel">Sign out</small></button>
+          </nav>
+        </div>
+      </section>
+      <a class="employee-owner-link" id="ownerPortalLink" href="/admin">Owner portal</a>
+    </main>
+    <script src="employee.js"></script>
+    <script src="pwa.js"></script>
+  </body>
+</html>
