@@ -37,6 +37,10 @@
           </div>
           <div class="booking-card">
             <div class="progress" aria-label="Hapat e rezervimit"><span class="step active">1</span><span class="step">2</span><span class="step">3</span><span class="step">4</span></div>
+            <div id="bookingDataStatus" class="booking-data-status hidden" role="status" aria-live="polite">
+              <span data-booking-status-message></span>
+              <button type="button" class="button button-small" data-booking-retry>Provo përsëri</button>
+            </div>
             <form id="booking-form">
               <div class="form-step active" data-step="1">
                 <label for="serviceSelect">Zgjidhni shërbimin</label><select id="serviceSelect" name="serviceId" required></select>

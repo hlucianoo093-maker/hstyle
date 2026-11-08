@@ -332,6 +332,31 @@ nav a:hover {
   display: block;
 }
 
+.booking-data-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(217, 177, 111, 0.35);
+  border-radius: 8px;
+  background: rgba(217, 177, 111, 0.08);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+[data-booking-only] .booking-data-status {
+  border-color: #d8d5cc;
+  background: #f7f5f0;
+  color: #263b32;
+}
+
+[data-booking-only] .booking-data-status .button {
+  flex: 0 0 auto;
+  min-height: 40px;
+}
+
 label {
   display: block;
   margin-bottom: 0.55rem;

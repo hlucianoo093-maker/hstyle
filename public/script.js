@@ -26,6 +26,7 @@ const bookingDate = document.getElementById('bookingDate');
 const timeSlots = document.getElementById('timeSlots');
 const bookingForm = document.getElementById('booking-form');
 const bookingSuccess = document.getElementById('bookingSuccess');
+const bookingDataStatus = document.getElementById('bookingDataStatus');
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, (character) => ({
@@ -510,38 +511,45 @@ async function fetchAvailability() {
   const selectedService = serviceSelect.value;
   const selectedBarber = barberSelect.value;
   const selectedDate = bookingDate.value;
+  const text = siteTranslations[state.settings.language] || siteTranslations.mk;
 
   if (!selectedService || !selectedBarber || !selectedDate) {
     timeSlots.innerHTML = '';
     return;
   }
 
+  timeSlots.innerHTML = `<p>${escapeHtml(state.settings.language === 'mk' ? 'Се вчитуваат слободните термини…' : 'Po ngarkohen oraret e lira…')}</p>`;
   try {
     const response = await fetch(`/api/availability?serviceId=${selectedService}&barberId=${selectedBarber}&date=${selectedDate}`);
+    if (!response.ok) throw new Error(`Failed to load availability (${response.status}).`);
     const data = await response.json();
-    if (data.success) {
+    if (data.success && Array.isArray(data.slots)) {
       renderTimeSlots(data.slots);
     } else {
-      timeSlots.innerHTML = `<p>${escapeHtml(data.error || (state.settings.language === 'mk' ? 'Нема слободни термини.' : 'Nuk ka orare të lira.'))}</p>`;
+      timeSlots.innerHTML = `<p>${escapeHtml(data.error || text.noTimes)}</p>`;
     }
   } catch (error) {
-    timeSlots.innerHTML = `<p>${escapeHtml((siteTranslations[state.settings.language] || siteTranslations.mk).availabilityError)}</p>`;
+    console.error('Failed to load booking availability', error);
+    timeSlots.innerHTML = `<p>${escapeHtml(text.availabilityError)}</p>`;
   }
 }
 
 async function loadData() {
+  setBookingDataState('loading');
   try {
-    const [servicesRes, barbersRes, settingsRes, bundlesRes] = await Promise.all([
-      fetch('/api/services'),
-      fetch('/api/barbers'),
-      fetch('/api/settings'),
-      fetch('/api/bundles'),
-    ]);
+    const endpoints = ['/api/services', '/api/barbers', '/api/settings', '/api/bundles'];
+    const [services, barbers, settings, bundles] = await Promise.all(endpoints.map(async (endpoint) => {
+      const response = await fetch(endpoint);
+      if (!response.ok) throw new Error(`Failed to load ${endpoint} (${response.status}).`);
+      return response.json();
+    }));
 
-    const services = await servicesRes.json();
-    const barbers = await barbersRes.json();
-    const settings = await settingsRes.json();
-    const bundles = await bundlesRes.json();
+    if (!Array.isArray(services) || !Array.isArray(barbers) || !Array.isArray(bundles) || !settings || typeof settings !== 'object') {
+      throw new Error('The booking data response has an invalid format.');
+    }
+    if (services.length === 0 || barbers.length === 0) {
+      throw new Error('No active services or specialists are available for booking.');
+    }
 
     state.services = services;
     state.barbers = barbers;
@@ -556,10 +564,43 @@ async function loadData() {
     bookingDate.value = nextDay.toISOString().split('T')[0];
     state.selectedDate = bookingDate.value;
     fetchAvailability();
+    setBookingDataState('ready');
   } catch (error) {
     console.error('Failed to load site data', error);
+    setBookingDataState('error');
   }
 }
+
+function setBookingDataState(status) {
+  if (!bookingDataStatus) return;
+
+  const messages = {
+    mk: {
+      loading: 'Се вчитуваат услугите и слободните термини…',
+      error: 'Не успеавме да ги вчитаме услугите. Проверете ја интернет-врската и обидете се повторно.',
+      retry: 'Обиди се повторно',
+    },
+    sq: {
+      loading: 'Po ngarkohen shërbimet dhe terminet e lira…',
+      error: 'Shërbimet nuk u ngarkuan. Kontrolloni internetin dhe provoni përsëri.',
+      retry: 'Provo përsëri',
+    },
+  };
+  const text = messages[state.settings.language] || messages.sq;
+  const message = bookingDataStatus.querySelector('[data-booking-status-message]');
+  const retryButton = bookingDataStatus.querySelector('[data-booking-retry]');
+  message.textContent = status === 'loading' ? text.loading : text.error;
+  retryButton.textContent = text.retry;
+  retryButton.classList.toggle('hidden', status !== 'error');
+  bookingDataStatus.classList.toggle('hidden', status === 'ready');
+  bookingForm.setAttribute('aria-busy', String(status === 'loading'));
+  bookingForm.querySelectorAll('button, input, select').forEach((control) => {
+    control.disabled = status !== 'ready';
+  });
+}
+
+const bookingRetryButton = bookingDataStatus?.querySelector('[data-booking-retry]');
+if (bookingRetryButton) bookingRetryButton.addEventListener('click', loadData);
 
 serviceSelect.addEventListener('change', () => {
   state.selectedService = serviceSelect.value;
